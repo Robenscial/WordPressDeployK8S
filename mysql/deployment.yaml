@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: db-mysql
+    spec:
+      containers:
+        - name: db-mysql
+          image: mysql:8.0.33
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "800Mi"
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: db-mysql
+          envFrom:
+            - secretRef:
+                name: db-mysql
+          ports:
+            - containerPort: 3306
+      volumes:
+        - name: db-mysql
+          persistentVolumeClaim:
+            claimName: db-mysql
+
+      
